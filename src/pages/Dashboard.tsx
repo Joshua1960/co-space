@@ -70,7 +70,7 @@ export const Dashboard: React.FC = () => {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-slate-900">
-                  Knowledge Board
+                  CoSpace <span className="text-slate-500">by Josh</span>
                 </h1>
                 <p className="text-xs text-slate-500">
                   Collaborative workspace

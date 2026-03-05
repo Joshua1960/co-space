@@ -140,7 +140,7 @@ export const CardModal: React.FC<CardModalProps> = ({
           onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
             setDescription(e.target.value)
           }
-          placeholder="Add more details... Supports **bold**, *italic*, `code`, and [links](url)"
+          placeholder="Add more details/description..."
           rows={5}
           helperText="Markdown supported"
         />
