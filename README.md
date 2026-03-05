@@ -383,10 +383,6 @@ Contributions are welcome! Please:
 4. Ensure code quality with `npm run lint`
 5. Submit a pull request
 
-## License
-
-This project is licensed under the MIT License - see LICENSE file for details.
-
 ## Support
 
 For issues, questions, or suggestions:
@@ -398,7 +394,7 @@ For issues, questions, or suggestions:
 
 ## Author
 
-Created with ❤️ as a modern project management solution.
+Created by Joshua Joel as part of my prerequisite task with Telonvo Residency Program.
 
 ---
 
