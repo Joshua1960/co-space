@@ -20,7 +20,8 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeSanitize]}
         components={{
-          a: ({ ...props }) => (
+          // Destructure 'node' out so it doesn't get passed to the <a> tag
+          a: ({ node, ...props }) => (
             <a
               {...props}
               target="_blank"
@@ -28,7 +29,8 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
               className="text-blue-600 hover:underline"
             />
           ),
-          code({ inline, children, ...props }) {
+          // Destructure 'inline' and 'node' to fix TS2339 error
+          code({ node, inline, children, ...props }) {
             if (inline) {
               return (
                 <code
