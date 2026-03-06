@@ -14,8 +14,8 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 }) => {
   if (!content) return null;
 
-  const markdownComponents: Record<string, React.ComponentType<any>> = {
-    a: ({ ...props }) => (
+  const markdownComponents: Record<string, any> = {
+    a: ({ ...props }: any) => (
       <a
         {...props}
         target="_blank"
@@ -41,25 +41,25 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         </pre>
       );
     },
-    h1: ({ children }) => (
+    h1: ({ children }: any) => (
       <h1 className="text-xl font-bold text-slate-900 mt-4 mb-2">{children}</h1>
     ),
-    h2: ({ children }) => (
+    h2: ({ children }: any) => (
       <h2 className="text-lg font-semibold text-slate-900 mt-4 mb-2">
         {children}
       </h2>
     ),
-    h3: ({ children }) => (
+    h3: ({ children }: any) => (
       <h3 className="text-base font-semibold text-slate-900 mt-3 mb-1">
         {children}
       </h3>
     ),
-    ul: ({ children }) => (
+    ul: ({ children }: any) => (
       <ul className="list-disc list-inside space-y-1 text-slate-600">
         {children}
       </ul>
     ),
-    li: ({ children }) => <li>{children}</li>,
+    li: ({ children }: any) => <li>{children}</li>,
   };
 
   return (
