@@ -9,14 +9,10 @@ interface BoardCardProps {
   onDelete: (boardId: string) => void;
   columnCount: number;
   cardCount: number;
-  index: number;
-  onDragStart: (
-    e: React.DragEvent,
-    id: string,
-    type: string,
-    index: number,
-  ) => void;
-  onDragEnd: (e: React.DragEvent) => void;
+
+  index?: number; // ✅ optional
+  onDragStart?: (e: React.DragEvent, index: number) => void;
+  onDragEnd?: (e: React.DragEvent) => void;
 }
 
 export const BoardCard: React.FC<BoardCardProps> = memo(
@@ -34,9 +30,13 @@ export const BoardCard: React.FC<BoardCardProps> = memo(
 
     return (
       <article
-        draggable // Enable native dragging
-        onDragStart={(e) => onDragStart(e, board.id, "board", index)}
-        onDragEnd={onDragEnd}
+        draggable={!!onDragStart}
+        onDragStart={(e) => {
+          if (onDragStart && index !== undefined) {
+            onDragStart(e, index);
+          }
+        }}
+        onDragEnd={(e) => onDragEnd?.(e)}
         className="group relative bg-white rounded-2xl border border-slate-200 p-5 hover:border-slate-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
         onClick={() => onSelect(board.id)}
         role="button"

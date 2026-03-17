@@ -231,6 +231,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
         description: action.payload.description,
         tags: action.payload.tags,
         dueDate: action.payload.dueDate,
+        comments: [], // ✅ add this
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };

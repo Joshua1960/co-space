@@ -77,6 +77,17 @@ export interface Card {
   comments: Comment[]; // New field
 }
 
+export interface DropResult {
+  source: {
+    columnId: string;
+    index: number;
+  };
+  destination: {
+    columnId: string;
+    index: number;
+  };
+}
+
 // Action Types
 export type AppAction =
   | { type: "CREATE_BOARD"; payload: { title: string; description: string } }
@@ -121,5 +132,3 @@ export type AppAction =
         newIndex: number;
       };
     };
-
-
