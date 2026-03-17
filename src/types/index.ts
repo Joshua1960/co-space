@@ -46,7 +46,13 @@ export interface UIState {
   activeBoardId: string | null;
   editingCardId: string | null;
   editingColumnId: string | null;
-  modalType: 'create-board' | 'create-column' | 'create-card' | 'edit-card' | 'delete-confirm' | null;
+  modalType:
+    | "create-board"
+    | "create-column"
+    | "create-card"
+    | "edit-card"
+    | "delete-confirm"
+    | null;
   modalData: Record<string, unknown>;
 }
 
@@ -59,15 +65,37 @@ export interface AppState {
 
 // Action Types
 export type AppAction =
-  | { type: 'CREATE_BOARD'; payload: { title: string; description: string } }
-  | { type: 'DELETE_BOARD'; payload: { boardId: string } }
-  | { type: 'SET_ACTIVE_BOARD'; payload: { boardId: string | null } }
-  | { type: 'CREATE_COLUMN'; payload: { boardId: string; title: string } }
-  | { type: 'UPDATE_COLUMN'; payload: { columnId: string; title: string } }
-  | { type: 'DELETE_COLUMN'; payload: { columnId: string } }
-  | { type: 'CREATE_CARD'; payload: { columnId: string; title: string; description: string; tags: string[]; dueDate: string | null } }
-  | { type: 'UPDATE_CARD'; payload: { cardId: string; updates: Partial<Omit<Card, 'id' | 'columnId' | 'createdAt'>> } }
-  | { type: 'DELETE_CARD'; payload: { cardId: string } }
-  | { type: 'SET_MODAL'; payload: { modalType: UIState['modalType']; modalData?: Record<string, unknown> } }
-  | { type: 'SET_EDITING_CARD'; payload: { cardId: string | null } }
-  | { type: 'SET_EDITING_COLUMN'; payload: { columnId: string | null } };
+  | { type: "CREATE_BOARD"; payload: { title: string; description: string } }
+  | { type: "DELETE_BOARD"; payload: { boardId: string } }
+  | { type: "SET_ACTIVE_BOARD"; payload: { boardId: string | null } }
+  | { type: "CREATE_COLUMN"; payload: { boardId: string; title: string } }
+  | { type: "UPDATE_COLUMN"; payload: { columnId: string; title: string } }
+  | { type: "DELETE_COLUMN"; payload: { columnId: string } }
+  | {
+      type: "CREATE_CARD";
+      payload: {
+        columnId: string;
+        title: string;
+        description: string;
+        tags: string[];
+        dueDate: string | null;
+      };
+    }
+  | {
+      type: "UPDATE_CARD";
+      payload: {
+        cardId: string;
+        updates: Partial<Omit<Card, "id" | "columnId" | "createdAt">>;
+      };
+    }
+  | { type: "DELETE_CARD"; payload: { cardId: string } }
+  | {
+      type: "SET_MODAL";
+      payload: {
+        modalType: UIState["modalType"];
+        modalData?: Record<string, unknown>;
+      };
+    }
+  | { type: "SET_EDITING_CARD"; payload: { cardId: string | null } }
+  | { type: "SET_EDITING_COLUMN"; payload: { columnId: string | null } };
+  | { type: "MOVE_CARD"; payload: { cardId: string; sourceColumnId: string; destinationColumnId: string; newIndex: number } }

@@ -10,11 +10,36 @@ import {
 } from "../context/AppContext";
 import type { Card } from "../types";
 import { formatDate } from "../lib/utils";
+import { useDragAndDrop } from "../lib/hooks/useDragAndDrop";
 
 export const BoardView: React.FC = () => {
-  const { dispatch, getColumnCards } = useAppState();
+  const { state, dispatch, getColumnCards } = useAppState();
   const board = useActiveBoard();
   const columns = useBoardColumns(board?.id || "");
+
+  const onMoveTask = (result: any) => {
+    dispatch({
+      type: "MOVE_CARD",
+      payload: {
+        cardId: result.taskId, // Adapted to your existing dispatch naming
+        sourceColumnId: result.source.columnId,
+        destinationColumnId: result.destination.columnId,
+        newIndex: result.destination.index,
+      },
+    });
+  };
+
+  // 1. Initialize the Co-Space native DnD logic
+  const {
+    handleDragStart,
+    handleDragEnd,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+  } = useDragAndDrop({
+    onMoveTask,
+    tasks: Object.values(state.cards.byId), // Pass the full task list for index calculation
+  });
 
   // Modal states
   const [isCardModalOpen, setIsCardModalOpen] = useState(false);
@@ -134,6 +159,12 @@ export const BoardView: React.FC = () => {
               key={column.id}
               column={column}
               cards={getColumnCardsMemo(column.id)}
+              // 2. Pass the Native Co-Space Handlers
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
               onCreateCard={handleCreateCard}
               onEditCard={handleEditCard}
               onDeleteCard={handleDeleteCard}

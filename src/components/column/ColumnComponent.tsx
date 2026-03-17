@@ -11,22 +11,61 @@ interface ColumnComponentProps {
   onDeleteCard: (cardId: string) => void;
   onEditColumn: (columnId: string, title: string) => void;
   onDeleteColumn: (columnId: string) => void;
+  onDragStart: (
+    e: React.DragEvent,
+    taskId: string,
+    columnId: string,
+    index: number,
+  ) => void;
+  onDragEnd: (e: React.DragEvent) => void;
+  onDragOver: (e: React.DragEvent, columnId: string, index?: number) => void;
+  onDragLeave: (e: React.DragEvent) => void;
+  onDrop: (e: React.DragEvent, columnId: string, index: number) => void;
 }
 
 export const ColumnComponent: React.FC<ColumnComponentProps> = memo(
   ({
     column,
     cards,
+    onDragStart,
+    onDragEnd,
+    onDragOver,
+    onDragLeave,
+    onDrop,
     onCreateCard,
     onEditCard,
     onDeleteCard,
     onEditColumn,
     onDeleteColumn,
   }) => {
+    // Drag state
+    const [isDragOver, setIsDragOver] = useState(false);
+
+    // UI state
     const [showMenu, setShowMenu] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editTitle, setEditTitle] = useState(column.title);
 
+    // Drag handlers
+    const handleDragOver = (e: React.DragEvent) => {
+      e.preventDefault(); // CRITICAL: If this is missing, you can't drop here.
+      e.dataTransfer.dropEffect = "move";
+      setIsDragOver(true);
+      onDragOver(e, column.id);
+    };
+
+    const handleDragLeave = (e: React.DragEvent) => {
+      setIsDragOver(false);
+      onDragLeave(e);
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragOver(false);
+      onDrop(e, column.id, cards.length);
+    };
+
+    // Edit handler
     const handleSaveEdit = useCallback(() => {
       if (editTitle.trim()) {
         onEditColumn(column.id, editTitle.trim());
@@ -36,8 +75,12 @@ export const ColumnComponent: React.FC<ColumnComponentProps> = memo(
 
     return (
       <section
-        className="shrink-0 w-72 bg-slate-50 rounded-2xl p-3"
-        aria-label={`Column: ${column.title}`}
+        onDragOver={(e) => handleDragOver(e, column.id)} // This MUST have e.preventDefault()
+        onDragLeave={handleDragLeave}
+        onDrop={(e) => handleDrop(e, column.id, cards.length)}
+        className={`shrink-0 w-72 rounded-2xl p-3 transition-colors ${
+          isDragOver ? "bg-slate-200 ring-2 ring-slate-400/50" : "bg-slate-50"
+        }`}
       >
         {/* Header */}
         <header className="flex items-center justify-between mb-3 px-1">
@@ -112,11 +155,18 @@ export const ColumnComponent: React.FC<ColumnComponentProps> = memo(
         </header>
 
         {/* Cards */}
-        <div className="space-y-2 mb-3 max-h-[calc(100vh-280px)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent">
-          {cards.map((card) => (
+        <div
+          className="space-y-2 min-h-37.5" // Ensure there is a min-height so empty columns are targets
+          onDragOver={handleDragOver}
+          onDrop={(e) => onDrop(e, column.id, cards.length)}
+        >
+          {cards.map((card, index) => (
             <CardComponent
               key={card.id}
               card={card}
+              index={index}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
               onEdit={onEditCard}
               onDelete={onDeleteCard}
             />

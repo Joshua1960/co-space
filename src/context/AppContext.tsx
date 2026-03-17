@@ -18,14 +18,17 @@ const loadFromStorage = (): AppState => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
-      // Ensure the structure is valid, fallback to initial if not
       return {
+        // Spread initialState first to ensure default values for new state slices
         ...initialState,
-        ...parsed,
-        // Optionally, reset UI state on load if needed
+        // Spread data slices specifically
+        boards: parsed.boards || initialState.boards,
+        columns: parsed.columns || initialState.columns,
+        cards: parsed.cards || initialState.cards,
+        // Reset UI specific states but keep the active board
         ui: {
           ...initialState.ui,
-          activeBoardId: parsed.ui?.activeBoardId || null, // Keep active board
+          activeBoardId: parsed.ui?.activeBoardId || null,
         },
       };
     }
@@ -325,6 +328,60 @@ function appReducer(state: AppState, action: AppAction): AppState {
         ui: { ...state.ui, editingColumnId: action.payload.columnId },
       };
     }
+    // MOVE CARD CASE
+
+    case "MOVE_CARD": {
+      const { cardId, sourceColumnId, destinationColumnId, newIndex } =
+        action.payload;
+
+      const sourceCol = state.columns.byId[sourceColumnId];
+      const destCol = state.columns.byId[destinationColumnId];
+
+      if (!sourceCol || !destCol) return state;
+
+      // 1. ALWAYS remove the card from the source column first
+      const sourceCardIds = sourceCol.cardIds.filter((id) => id !== cardId);
+
+      // 2. Handle the destination IDs
+      let destCardIds: string[];
+
+      if (sourceColumnId === destinationColumnId) {
+        // Reordering within the same column
+        destCardIds = [...sourceCardIds];
+      } else {
+        // Moving to a different column
+        // Filter destCol too, just in case the ID exists there (prevents ghost duplicates)
+        destCardIds = destCol.cardIds.filter((id) => id !== cardId);
+      }
+
+      // 3. Insert the card at the exact new index
+      destCardIds.splice(newIndex, 0, cardId);
+
+      return {
+        ...state,
+        // 4. Sync the card's columnId metadata
+        cards: {
+          ...state.cards,
+          byId: {
+            ...state.cards.byId,
+            [cardId]: {
+              ...state.cards.byId[cardId],
+              columnId: destinationColumnId,
+            },
+          },
+        },
+        // 5. Update columns byId
+        columns: {
+          ...state.columns,
+          byId: {
+            ...state.columns.byId,
+            [sourceColumnId]: { ...sourceCol, cardIds: sourceCardIds },
+            [destinationColumnId]: { ...destCol, cardIds: destCardIds },
+          },
+        },
+      };
+    }
+    // END OF MOVE CARD CASE
 
     default:
       return state;
