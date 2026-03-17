@@ -63,6 +63,20 @@ export interface AppState {
   ui: UIState;
 }
 
+// COMMENT
+export interface Comment {
+  id: string;
+  cardId: string;
+  text: string;
+  author: string;
+  createdAt: string;
+}
+
+export interface Card {
+  // ... existing properties
+  comments: Comment[]; // New field
+}
+
 // Action Types
 export type AppAction =
   | { type: "CREATE_BOARD"; payload: { title: string; description: string } }
@@ -107,3 +121,5 @@ export type AppAction =
         newIndex: number;
       };
     };
+
+

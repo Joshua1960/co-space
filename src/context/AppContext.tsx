@@ -393,7 +393,6 @@ function appReducer(state: AppState, action: AppAction): AppState {
 interface AppContextValue {
   state: AppState;
   dispatch: React.Dispatch<AppAction>;
-  // Memoized selectors
   getBoard: (id: string) => Board | undefined;
   getColumn: (id: string) => Column | undefined;
   getCard: (id: string) => Card | undefined;

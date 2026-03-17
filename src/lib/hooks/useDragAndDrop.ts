@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
-import type { Card, DropResult } from "../types";
+import type { Card, DropResult } from "../../types";
+import type { DragEvent } from "react";
 
 interface DragState {
   isDragging: boolean;
@@ -13,7 +14,7 @@ interface UseDragAndDropProps {
   tasks: Card[];
 }
 
-export function useDragAndDrop({ onMoveTask, tasks }: UseDragAndDropProps) {
+export function useDragAndDrop({ onMoveTask }: UseDragAndDropProps) {
   const [dragState, setDragState] = useState<DragState>({
     isDragging: false,
     draggedTaskId: null,
@@ -47,7 +48,7 @@ export function useDragAndDrop({ onMoveTask, tasks }: UseDragAndDropProps) {
     [],
   );
 
-  const handleDragEnd = useCallback((e: React.DragEvent) => {
+  const handleDragEnd = useCallback((e: DragEvent) => {
     const element = e.currentTarget as HTMLElement;
     element.classList.remove("dragging");
 
@@ -64,19 +65,16 @@ export function useDragAndDrop({ onMoveTask, tasks }: UseDragAndDropProps) {
     });
   }, []);
 
-  const handleDragOver = useCallback(
-    (e: React.DragEvent, columnId: string, index?: number) => {
-      e.preventDefault(); // Required to allow a drop
-      e.dataTransfer.dropEffect = "move";
+  const handleDragOver = useCallback((e: DragEvent) => {
+    e.preventDefault(); // Required to allow a drop
+    e.dataTransfer.dropEffect = "move";
 
-      // Highlight the target column
-      const columnElement = e.currentTarget as HTMLElement;
-      columnElement.classList.add("drag-over");
-    },
-    [],
-  );
+    // Highlight the target column
+    const columnElement = e.currentTarget as HTMLElement;
+    columnElement.classList.add("drag-over");
+  }, []);
 
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
+  const handleDragLeave = useCallback((e: DragEvent) => {
     const columnElement = e.currentTarget as HTMLElement;
 
     // Prevent flickering when hovering over child cards
@@ -92,9 +90,7 @@ export function useDragAndDrop({ onMoveTask, tasks }: UseDragAndDropProps) {
   }, []);
 
   const handleDrop = useCallback(
-    (e: React.DragEvent, targetColumnId: string, targetIndex: number) => {
-      e.preventDefault();
-
+    (e: DragEvent, targetColumnId: string, targetIndex: number) => {
       e.preventDefault();
 
       const data = e.dataTransfer.getData("text/plain");
