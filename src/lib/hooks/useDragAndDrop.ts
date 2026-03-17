@@ -95,8 +95,8 @@ export function useDragAndDrop({ onMoveTask, tasks }: UseDragAndDropProps) {
     (e: React.DragEvent, targetColumnId: string, targetIndex: number) => {
       e.preventDefault();
 
-      // Console Test
-      console.log("Dropped in column:", targetColumnId);
+      e.preventDefault();
+
       const data = e.dataTransfer.getData("text/plain");
       if (!data) return;
 

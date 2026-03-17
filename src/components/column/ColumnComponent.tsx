@@ -75,9 +75,9 @@ export const ColumnComponent: React.FC<ColumnComponentProps> = memo(
 
     return (
       <section
-        onDragOver={(e) => handleDragOver(e, column.id)} // This MUST have e.preventDefault()
+        onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        onDrop={(e) => handleDrop(e, column.id, cards.length)}
+        onDrop={handleDrop}
         className={`shrink-0 w-72 rounded-2xl p-3 transition-colors ${
           isDragOver ? "bg-slate-200 ring-2 ring-slate-400/50" : "bg-slate-50"
         }`}
@@ -155,11 +155,7 @@ export const ColumnComponent: React.FC<ColumnComponentProps> = memo(
         </header>
 
         {/* Cards */}
-        <div
-          className="space-y-2 min-h-37.5" // Ensure there is a min-height so empty columns are targets
-          onDragOver={handleDragOver}
-          onDrop={(e) => onDrop(e, column.id, cards.length)}
-        >
+        <div className="space-y-2 min-h-[9.375rem]">
           {cards.map((card, index) => (
             <CardComponent
               key={card.id}

@@ -97,5 +97,13 @@ export type AppAction =
       };
     }
   | { type: "SET_EDITING_CARD"; payload: { cardId: string | null } }
-  | { type: "SET_EDITING_COLUMN"; payload: { columnId: string | null } };
-  | { type: "MOVE_CARD"; payload: { cardId: string; sourceColumnId: string; destinationColumnId: string; newIndex: number } }
+  | { type: "SET_EDITING_COLUMN"; payload: { columnId: string | null } }
+  | {
+      type: "MOVE_CARD";
+      payload: {
+        cardId: string;
+        sourceColumnId: string;
+        destinationColumnId: string;
+        newIndex: number;
+      };
+    };

@@ -336,8 +336,9 @@ function appReducer(state: AppState, action: AppAction): AppState {
 
       const sourceCol = state.columns.byId[sourceColumnId];
       const destCol = state.columns.byId[destinationColumnId];
+      const card = state.cards.byId[cardId];
 
-      if (!sourceCol || !destCol) return state;
+      if (!sourceCol || !destCol || !card) return state;
 
       // 1. ALWAYS remove the card from the source column first
       const sourceCardIds = sourceCol.cardIds.filter((id) => id !== cardId);
