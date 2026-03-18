@@ -1,29 +1,30 @@
-import React, { memo, useState } from "react";
-import { Calendar, Edit, Trash2, MoreVertical } from "lucide-react";
-import type { Card } from "../../types";
-import { Tag } from "../ui/TagInput";
-import { formatDate, isOverdue, classNames } from "../../lib/utils";
-import { MarkdownRenderer } from "../../lib/markdown";
+import React, { memo, useState } from 'react';
+import { Calendar, Edit, Trash2, MoreVertical, MessageCircle } from 'lucide-react';
+import { Tag } from '../ui/TagInput';
+import { Badge } from '../ui/Badge';
+import { formatDate, isOverdue, classNames } from '../../lib/utils';
+import { MarkdownRenderer } from '../../lib/markdown';
+import { useCard, useCardCommentCount } from '../../lib/selectors';
+import type { Card } from '../../types';
 
 interface CardComponentProps {
-  card: Card;
+  cardId: string;
   index: number;
   onEdit: (card: Card) => void;
   onDelete: (cardId: string) => void;
-  onDragStart: (
-    e: React.DragEvent,
-    id: string,
-    columnId: string,
-    index: number,
-  ) => void;
+  onOpenDetail: (card: Card) => void;
+  onDragStart: (e: React.DragEvent, id: string, columnId: string, index: number) => void;
   onDragEnd: (e: React.DragEvent) => void;
 }
 
 export const CardComponent: React.FC<CardComponentProps> = memo(
-  ({ card, index, onEdit, onDelete, onDragStart, onDragEnd }) => {
+  ({ cardId, index, onEdit, onDelete, onOpenDetail, onDragStart, onDragEnd }) => {
+    const card = useCard(cardId);
+    const totalCommentCount = useCardCommentCount(cardId);
     const [showMenu, setShowMenu] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
 
+    if (!card) return null;
     const overdue = isOverdue(card.dueDate);
 
     return (
@@ -31,107 +32,120 @@ export const CardComponent: React.FC<CardComponentProps> = memo(
         draggable
         onDragStart={(e) => onDragStart(e, card.id, card.columnId, index)}
         onDragEnd={onDragEnd}
-        // STYLING
-        className="group bg-white rounded-xl border border-slate-200 p-4 hover:border-slate-300 hover:shadow-md transition-all duration-200 cursor-grab active:cursor-grabbing"
+        className="group rounded-xl p-4 cursor-grab active:cursor-grabbing"
+        style={{
+          background: 'var(--bg-surface)',
+          border: '1px solid var(--border)',
+          boxShadow: 'var(--shadow-sm)',
+          transition: 'box-shadow 150ms, border-color 150ms',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = 'var(--border-strong)';
+          e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = 'var(--border)';
+          e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+        }}
         role="article"
         aria-label={`Card: ${card.title}`}
       >
         {/* Header */}
         <div className="flex items-start justify-between mb-2">
-          <h4 className="font-medium text-slate-900 text-sm line-clamp-2 flex-1 pr-2">
+          <h4
+            className="font-medium text-sm line-clamp-2 flex-1 pr-2 cursor-pointer"
+            style={{ color: 'var(--text-primary)' }}
+            onClick={() => onOpenDetail(card)}
+          >
             {card.title}
           </h4>
-          <div className="relative">
+          <div className="relative shrink-0">
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowMenu(!showMenu);
-              }}
-              className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 opacity-0 group-hover:opacity-100 transition-all"
+              onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }}
+              className="p-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
+              style={{ color: 'var(--text-muted)' }}
               aria-label="Card options"
-              aria-expanded={showMenu}
             >
               <MoreVertical size={14} />
             </button>
-
             {showMenu && (
               <>
+                <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
                 <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setShowMenu(false)}
-                />
-                <div className="absolute right-0 top-full mt-1 z-20 w-32 bg-white rounded-lg shadow-lg border border-slate-200 py-1 overflow-hidden">
-                  <button
-                    onClick={() => {
-                      setShowMenu(false);
-                      onEdit(card);
-                    }}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                  >
-                    <Edit size={12} />
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowMenu(false);
-                      onDelete(card.id);
-                    }}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                  >
-                    <Trash2 size={12} />
-                    Delete
-                  </button>
+                  className="absolute right-0 top-full mt-1 z-20 w-40 rounded-xl py-1 overflow-hidden"
+                  style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-lg)' }}
+                >
+                  {[
+                    { label: 'View & Comment', icon: <MessageCircle size={12} />, action: () => { setShowMenu(false); onOpenDetail(card); }, danger: false },
+                    { label: 'Edit',           icon: <Edit size={12} />,          action: () => { setShowMenu(false); onEdit(card); },       danger: false },
+                    { label: 'Delete',         icon: <Trash2 size={12} />,        action: () => { setShowMenu(false); onDelete(card.id); },  danger: true  },
+                  ].map(({ label, icon, action, danger }) => (
+                    <button
+                      key={label}
+                      onClick={action}
+                      className="w-full flex items-center gap-2 px-3 py-1.5 text-sm transition-colors"
+                      style={{ color: danger ? 'var(--danger-text)' : 'var(--text-primary)' }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = danger ? 'var(--danger-subtle)' : 'var(--bg-subtle)')}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      {icon} {label}
+                    </button>
+                  ))}
                 </div>
               </>
             )}
           </div>
         </div>
 
-        {/* Description (collapsible) */}
+        {/* Description */}
         {card.description && (
           <div
-            className={classNames(
-              "text-xs text-slate-600 mb-3 cursor-pointer",
-              !isExpanded && "line-clamp-2",
-            )}
+            className={classNames('text-xs mb-3 cursor-pointer leading-relaxed', !isExpanded && 'line-clamp-2')}
+            style={{ color: 'var(--text-secondary)' }}
             onClick={() => setIsExpanded(!isExpanded)}
           >
-            {isExpanded ? (
-              <MarkdownRenderer content={card.description} />
-            ) : (
-              <div className="line-clamp-2">
-                {card.description.replace(/[#*`]/g, "").substring(0, 100)}
-                {card.description.length > 100 && "..."}
-              </div>
-            )}
+            {isExpanded
+              ? <MarkdownRenderer content={card.description} />
+              : <>{card.description.replace(/[#*`]/g, '').substring(0, 100)}{card.description.length > 100 && '…'}</>
+            }
           </div>
         )}
 
         {/* Tags */}
         {card.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-3">
-            {card.tags.slice(0, 3).map((tag) => (
-              <Tag key={tag} label={tag} />
-            ))}
+            {card.tags.slice(0, 3).map((tag) => <Tag key={tag} label={tag} />)}
             {card.tags.length > 3 && (
-              <span className="text-xs text-slate-400 px-1.5 py-0.5">
-                +{card.tags.length - 3}
-              </span>
+              <Badge variant="default" size="sm">+{card.tags.length - 3}</Badge>
             )}
           </div>
         )}
 
         {/* Footer */}
-        {card.dueDate && (
-          <div
-            className={classNames(
-              "flex items-center gap-1.5 text-xs",
-              overdue ? "text-red-600" : "text-slate-400",
-            )}
-          >
-            <Calendar size={12} />
-            <span>{formatDate(card.dueDate)}</span>
-            {overdue && <span className="font-medium">(Overdue)</span>}
+        <div className="flex items-center justify-between">
+          {card.dueDate ? (
+            <div className="flex items-center gap-1.5 text-xs" style={{ color: overdue ? 'var(--danger-text)' : 'var(--text-muted)' }}>
+              <Calendar size={11} />
+              <span>{formatDate(card.dueDate)}</span>
+              {overdue && <Badge variant="danger" size="sm">Overdue</Badge>}
+            </div>
+          ) : <div />}
+
+          {totalCommentCount > 0 && (
+            <button
+              onClick={() => onOpenDetail(card)}
+              className="flex items-center gap-1 text-xs transition-colors"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              <MessageCircle size={11} />
+              <span>{totalCommentCount}</span>
+            </button>
+          )}
+        </div>
+
+        {card.lastEditedBy && (
+          <div className="mt-2 text-xs truncate" style={{ color: 'var(--text-muted)', opacity: 0.6 }}>
+            v{card.version} · {card.lastEditedBy}
           </div>
         )}
       </article>
@@ -139,4 +153,4 @@ export const CardComponent: React.FC<CardComponentProps> = memo(
   },
 );
 
-CardComponent.displayName = "CardComponent";
+CardComponent.displayName = 'CardComponent';
