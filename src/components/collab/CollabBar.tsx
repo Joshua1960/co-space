@@ -4,7 +4,7 @@ import { useCollab, useAppState } from '../../context/AppContext';
 import { formatRelativeDate, nameInitial } from '../../lib/utils';
 import { useToast } from '../../context/ToastContext';
 
-export const CollabBar: React.FC = () => {
+export const CollabBar: React.FC<{ compact?: boolean }> = ({ compact: _compact }) => {
   const collab = useCollab();
   const { renameUser } = useAppState();
   const { toast } = useToast();
@@ -92,7 +92,7 @@ export const CollabBar: React.FC = () => {
         {showUsers && (
           <>
             <div className="fixed inset-0 z-40" onClick={() => setShowUsers(false)} />
-            <div className="absolute right-0 top-full mt-2 w-64 rounded-xl py-2 z-50" style={dropdownStyle}>
+            <div className="absolute right-0 top-full mt-2 w-56 sm:w-64 rounded-xl py-2 z-50 max-w-[calc(100vw-2rem)]" style={dropdownStyle}>
               <p className="text-xs font-semibold px-3 pb-2" style={{ color: 'var(--text-muted)' }}>Online now</p>
 
               {onlineUsers.map((user) => {
@@ -178,7 +178,7 @@ export const CollabBar: React.FC = () => {
           {showConflicts && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setShowConflicts(false)} />
-              <div className="absolute right-0 top-full mt-2 w-80 rounded-xl py-2 z-50 max-h-64 overflow-y-auto scrollbar-thin" style={dropdownStyle}>
+              <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 rounded-xl py-2 z-50 max-h-64 overflow-y-auto scrollbar-thin max-w-[calc(100vw-2rem)]" style={dropdownStyle}>
                 <div className="px-3 pb-2" style={{ borderBottom: '1px solid var(--border)' }}>
                   <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>Conflict Log</p>
                   <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Strategy: Last-Write-Wins</p>

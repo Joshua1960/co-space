@@ -42,28 +42,35 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm"
       onClick={handleBackdrop}
       role="dialog" aria-modal="true" aria-labelledby="modal-title"
     >
       <div
         ref={modalRef}
         className={[
-          'w-full flex flex-col max-h-[90vh] rounded-2xl overflow-hidden',
-          'bg-[var(--bg-surface)] shadow-[var(--shadow-xl)]',
-          sizeMap[size],
+          'w-full flex flex-col overflow-hidden',
+          'rounded-t-2xl sm:rounded-2xl',
+          'max-h-[92vh] sm:max-h-[90vh]',
+          'bg-white shadow-2xl',
+          `sm:${sizeMap[size]}`,
         ].join(' ')}
-        style={{ border: '1px solid var(--border)' }}
+        style={{ border: '1px solid var(--border, #e2e8f0)' }}
       >
+        {/* Drag handle on mobile */}
+        <div className="sm:hidden flex justify-center pt-2.5 pb-1 shrink-0">
+          <div className="w-8 h-1 rounded-full bg-slate-200" />
+        </div>
+
         {/* Header */}
-        <div className="flex items-start justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid var(--border)' }}>
+        <div className="flex items-start justify-between px-5 sm:px-6 py-3 sm:py-4 shrink-0 border-b border-slate-100">
           <div>
-            <h2 id="modal-title" className="text-base font-semibold text-[var(--text-primary)]">{title}</h2>
-            {description && <p className="text-sm text-[var(--text-muted)] mt-0.5">{description}</p>}
+            <h2 id="modal-title" className="text-base font-semibold text-slate-900">{title}</h2>
+            {description && <p className="text-sm text-slate-500 mt-0.5">{description}</p>}
           </div>
           <button
             onClick={onClose}
-            className="ml-4 p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] transition-colors"
+            className="ml-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
             aria-label="Close modal"
           >
             <X size={18} />
@@ -71,11 +78,11 @@ export const Modal: React.FC<ModalProps> = ({
         </div>
 
         {/* Body */}
-        <div className="px-6 py-5 overflow-y-auto flex-1 scrollbar-thin">{children}</div>
+        <div className="px-5 sm:px-6 py-4 sm:py-5 overflow-y-auto flex-1 scrollbar-thin">{children}</div>
 
-        {/* Optional footer */}
+        {/* Footer */}
         {footer && (
-          <div className="px-6 py-4 shrink-0 flex justify-end gap-3" style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-subtle)' }}>
+          <div className="px-5 sm:px-6 py-3 sm:py-4 shrink-0 flex justify-end gap-2 sm:gap-3 border-t border-slate-100 bg-slate-50">
             {footer}
           </div>
         )}

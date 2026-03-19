@@ -55,7 +55,7 @@ export const ColumnComponent: React.FC<ColumnComponentProps> = memo((
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className="shrink-0 w-72 rounded-2xl p-3 flex flex-col"
+      className="w-full sm:shrink-0 sm:w-72 rounded-2xl p-3 flex flex-col"
       style={{
         background: isDragOver ? 'var(--bg-muted)' : 'var(--bg-subtle)',
         outline: isDragOver ? '2px solid var(--border-strong)' : 'none',
@@ -137,7 +137,7 @@ export const ColumnComponent: React.FC<ColumnComponentProps> = memo((
       {/* Card list */}
       <div
         ref={containerRef}
-        className="flex-1 overflow-y-auto min-h-[120px] max-h-[calc(100vh-220px)] scrollbar-thin"
+        className="flex-1 overflow-y-auto min-h-[80px] sm:max-h-[calc(100vh-220px)] scrollbar-thin"
       >
         {shouldVirtualise && topSpacerHeight > 0 && (
           <div style={{ height: topSpacerHeight }} aria-hidden="true" />

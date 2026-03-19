@@ -29,9 +29,9 @@ export const WelcomeModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm">
       <div
-        className="w-full max-w-sm rounded-2xl overflow-hidden shadow-[var(--shadow-xl)]"
+        className="w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl"
         style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}
       >
         {/* Top band */}

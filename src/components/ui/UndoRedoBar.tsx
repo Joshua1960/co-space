@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { Undo2, Redo2 } from 'lucide-react';
 import { useUndoRedo } from '../../lib/undoRedoContext';
 
-export const UndoRedoBar: React.FC = () => {
+export const UndoRedoBar: React.FC<{ compact?: boolean }> = ({ compact: _compact }) => {
   const { canUndo, canRedo, undoLabel, redoLabel, handleUndo, handleRedo } = useUndoRedo();
 
   const onKeyDown = useCallback((e: KeyboardEvent) => {
